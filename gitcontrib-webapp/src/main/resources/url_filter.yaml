@@ -1,0 +1,13 @@
+filter:
+   - pattern: /admin/**
+     access: ADMIN
+   - pattern: /config/**
+     access: ADMIN, USER
+   - pattern: /private/**
+
+exclude:
+   - /*.ico
+   - /org.gitcontrib.GitContribApp/images/**
+   - /org.gitcontrib.GitContribApp/css/**
+   - /css/**
+   - /plugins/**
