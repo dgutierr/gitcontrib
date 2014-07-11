@@ -9,7 +9,7 @@
     <version>0.1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>gitcontrib-distro</artifactId>
+  <artifactId>gitcontrib-distros</artifactId>
   <packaging>pom</packaging>
 
   <name>Gitcontrib Distribution WARs</name>

@@ -65,7 +65,7 @@
         </property>
       </activation>
       <modules>
-        <module>gitcontrib-distro</module>
+        <module>gitcontrib-distros</module>
       </modules>
     </profile>
   </profiles>
