@@ -73,6 +73,13 @@
   <dependencyManagement>
     <dependencies>
 
+      <!-- Gitcontrib -->
+      <dependency>
+        <groupId>org.gitcontrib</groupId>
+        <artifactId>gitcontrib-dataset-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
       <!-- Dashbuilder -->
       <dependency>
         <groupId>org.dashbuilder</groupId>

@@ -16,6 +16,12 @@
 
   <dependencies>
 
+    <!-- Gitcontrib -->
+    <dependency>
+      <groupId>org.gitcontrib</groupId>
+      <artifactId>gitcontrib-dataset-core</artifactId>
+    </dependency>
+
     <!-- Dashbuilder -->
     <dependency>
       <groupId>org.dashbuilder</groupId>
