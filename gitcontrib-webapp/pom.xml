@@ -35,7 +35,7 @@
 
     <dependency>
       <groupId>org.dashbuilder</groupId>
-      <artifactId>dashbuilder-renderer-uftable</artifactId>
+      <artifactId>dashbuilder-renderer-table</artifactId>
     </dependency>
 
     <!-- UberFire -->

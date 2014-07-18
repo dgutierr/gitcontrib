@@ -17,31 +17,22 @@ package org.gitcontrib.client.screens;
 
 import javax.enterprise.context.Dependent;
 
-import com.github.gwtbootstrap.client.ui.Label;
 import com.google.gwt.user.client.ui.IsWidget;
-import org.dashbuilder.dataset.DataSetFactory;
-import org.dashbuilder.kpi.KPIFactory;
-import org.dashbuilder.kpi.client.KPIViewer;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 
-import static org.dashbuilder.dataset.date.Month.*;
-
 @Dependent
-@WorkbenchScreen(identifier = "HomeScreen")
-public class HomeScreen {
+@WorkbenchScreen(identifier = "KIEDashboardScreen")
+public class KIEDashboardScreen {
 
     @WorkbenchPartTitle
     public String getTitle() {
-        return "Home";
+        return "KIE Contributors";
     }
 
     @WorkbenchPartView
     public IsWidget getView() {
-        return new KPIViewer(KPIFactory.newTableKPI()
-        .title("All commits")
-        .dataset("gitcontrib_all")
-        .buildKPI()).draw();
+        return new GitContribOrgDashboard("KIE");
     }
 }

@@ -34,7 +34,7 @@ public class MainPerspective {
         perspective = new PerspectiveDefinitionImpl( PanelType.ROOT_STATIC);
         perspective.setTransient(true);
         perspective.setName("MainPerspective");
-        perspective.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("HomeScreen")));
+        perspective.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("KIEDashboardScreen")));
         return perspective;
     }
 }
