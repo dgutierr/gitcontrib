@@ -20,11 +20,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import org.dashbuilder.displayer.DisplayerSettingsFactory;
 import org.dashbuilder.displayer.client.Displayer;
 import org.dashbuilder.displayer.client.DisplayerCoordinator;
 import org.dashbuilder.displayer.client.DisplayerHelper;
-import org.dashbuilder.kpi.KPI;
-import org.dashbuilder.kpi.KPIFactory;
 import org.dashbuilder.renderer.table.client.TableRenderer;
 
 import static org.gitcontrib.client.screens.GitContribDataSetConstants.*;
@@ -58,10 +57,6 @@ public class GitContribOrgDashboard extends Composite {
     @UiField(provided = true)
     Displayer tableAll;
 
-    public Displayer lookupViewer(KPI kpi) {
-        return DisplayerHelper.lookupDisplayer(kpi.getDataSetRef(), kpi.getDisplayerSettings());
-    }
-
     protected String organization = null;
 
     public GitContribOrgDashboard(String organization) {
@@ -69,35 +64,40 @@ public class GitContribOrgDashboard extends Composite {
 
         // Create the chart definitions
 
-        areaChartByDate = lookupViewer(KPIFactory.newAreaChartKPI()
-                .dataset(GITCONTRIB_ALL)
-                .group(COLUMN_ORG).select(organization)
-                .group(COLUMN_DATE, 80, MONTH)
-                .count("commits")
-                .title("#Commits evolution")
-                .titleVisible(true)
-                .width(850).height(200)
-                .margins(10, 70, 60, 0)
-                .column("Date")
-                .column("#Commits")
-                .filterOn(false, true, true)
-                .buildKPI());
+        areaChartByDate = DisplayerHelper.lookupDisplayer(
+                DisplayerSettingsFactory.newAreaChartSettings()
+                        .dataset(GITCONTRIB_ALL)
+                        .group(COLUMN_ORG).select(organization)
+                        .group(COLUMN_DATE, 80, MONTH)
+                        .count("commits")
+                        .title("#Commits evolution")
+                        .titleVisible(true)
+                        .width(850).height(200)
+                        .margins(10, 70, 60, 0)
+                        .column("Date")
+                        .column("#Commits")
+                        .filterOn(false, true, true)
+                        .buildSettings());
 
-        pieChartByModule = lookupViewer(KPIFactory.newPieChartKPI()
+        pieChartByModule = DisplayerHelper.lookupDisplayer(
+                DisplayerSettingsFactory.newBarChartSettings()
                 .dataset(GITCONTRIB_ALL)
                 .group(COLUMN_ORG).select(organization)
                 .group(COLUMN_MODULE)
                 .count("#commits")
+                .sort(COLUMN_MODULE, ASCENDING)
                 .title("Modules")
                 .titleVisible(true)
-                .width(300).height(150)
-                .margins(0, 0, 0, 100)
+                .width(250).height(150)
+                .margins(0, 40, 100, 0)
                 .column("Module")
                 .column("Number of commits")
+                .horizontal()
                 .filterOn(false, true, true)
-                .buildKPI());
+                .buildSettings());
 
-        pieChartYears = lookupViewer(KPIFactory.newPieChartKPI()
+        pieChartYears = DisplayerHelper.lookupDisplayer(
+                DisplayerSettingsFactory.newPieChartSettings()
                 .dataset(GITCONTRIB_ALL)
                 .group(COLUMN_ORG).select(organization)
                 .group(COLUMN_DATE, YEAR)
@@ -108,9 +108,10 @@ public class GitContribOrgDashboard extends Composite {
                 .width(200).height(150)
                 .margins(0, 0, 0, 0)
                 .filterOn(false, true, false)
-                .buildKPI());
+                .buildSettings());
 
-        pieChartQuarters = lookupViewer(KPIFactory.newPieChartKPI()
+        pieChartQuarters = DisplayerHelper.lookupDisplayer(
+                DisplayerSettingsFactory.newPieChartSettings()
                 .dataset(GITCONTRIB_ALL)
                 .group(COLUMN_ORG).select(organization)
                 .group(COLUMN_DATE).fixed(QUARTER)
@@ -120,9 +121,10 @@ public class GitContribOrgDashboard extends Composite {
                 .width(200).height(150)
                 .margins(0, 0, 0, 0)
                 .filterOn(false, true, false)
-                .buildKPI());
+                .buildSettings());
 
-        barChartDayOfWeek = lookupViewer(KPIFactory.newBarChartKPI()
+        barChartDayOfWeek = DisplayerHelper.lookupDisplayer(
+                DisplayerSettingsFactory.newBarChartSettings()
                 .dataset(GITCONTRIB_ALL)
                 .group(COLUMN_ORG).select(organization)
                 .group(COLUMN_DATE).fixed(DAY_OF_WEEK).firstDay(SUNDAY)
@@ -133,24 +135,25 @@ public class GitContribOrgDashboard extends Composite {
                 .margins(0, 40, 70, 0)
                 .horizontal()
                 .filterOn(false, true, true)
-                .buildKPI());
+                .buildSettings());
 
-        tableAll = lookupViewer(KPIFactory.newTableKPI()
+        tableAll = DisplayerHelper.lookupDisplayer(
+                DisplayerSettingsFactory.newTableSettings()
                 .dataset(GITCONTRIB_ALL)
                 .group(COLUMN_ORG).select(organization)
                 .title("Commits")
                 .titleVisible(false)
-                .tablePageSize(8)
+                .tablePageSize(6)
                 .tableOrderEnabled(true)
                 .tableOrderDefault(COLUMN_ORG, DESCENDING)
                 .column(COLUMN_MODULE, "Module")
                 .column(COLUMN_REPO, "Repository")
                 .column(COLUMN_AUTHOR, "Author")
                 .column(COLUMN_DATE, "Date")
-                //.column(COLUMN_MSG, "Message")
+                .column(COLUMN_MSG, "Message")
                 .filterOn(true, true, true)
                 .renderer(TableRenderer.UUID)
-                .buildKPI());
+                .buildSettings());
 
         // Make that charts interact among them
         DisplayerCoordinator viewerCoordinator = new DisplayerCoordinator();
