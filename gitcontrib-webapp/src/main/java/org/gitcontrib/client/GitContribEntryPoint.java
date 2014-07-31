@@ -30,7 +30,10 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import org.dashbuilder.dataset.DataSetLookupService;
 import org.dashbuilder.dataset.client.DataSetLookupClient;
+import org.dashbuilder.displayer.DisplayerType;
 import org.dashbuilder.displayer.client.RendererLibLocator;
+import org.dashbuilder.renderer.google.client.GoogleRenderer;
+import org.dashbuilder.renderer.selector.client.SelectorRenderer;
 import org.jboss.errai.bus.client.api.ClientMessageBus;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.api.EntryPoint;
@@ -91,6 +94,17 @@ public class GitContribEntryPoint {
         // not only to the ClientDataSetManager but also to the remote DataSetLookupService.
         dataSetLookupClient.setLookupService(dataSetLookupService);
 
+        // Set the default renderer lib for each displayer type.
+        rendererLibLocator.setDefaultRenderer( DisplayerType.BARCHART, GoogleRenderer.UUID);
+        rendererLibLocator.setDefaultRenderer( DisplayerType.PIECHART, GoogleRenderer.UUID);
+        rendererLibLocator.setDefaultRenderer( DisplayerType.AREACHART, GoogleRenderer.UUID);
+        rendererLibLocator.setDefaultRenderer( DisplayerType.LINECHART, GoogleRenderer.UUID);
+        rendererLibLocator.setDefaultRenderer( DisplayerType.BUBBLECHART, GoogleRenderer.UUID);
+        rendererLibLocator.setDefaultRenderer( DisplayerType.METERCHART, GoogleRenderer.UUID);
+        rendererLibLocator.setDefaultRenderer( DisplayerType.MAP, GoogleRenderer.UUID);
+        rendererLibLocator.setDefaultRenderer( DisplayerType.TABLE, GoogleRenderer.UUID);
+        rendererLibLocator.setDefaultRenderer( DisplayerType.SELECTOR, SelectorRenderer.UUID);
+
         // Enable the ability to push and handle on client data sets greater than 2 Mb
         dataSetLookupClient.setPushRemoteDataSetEnabled(true);
         dataSetLookupClient.setPushRemoteDataSetMaxSize(2024);
@@ -100,7 +114,7 @@ public class GitContribEntryPoint {
         final PerspectiveActivity defaultPerspective = getDefaultPerspectiveActivity();
 
         final Menus menus =
-                newTopLevelMenu("KIE Dashboard").respondsWith(new Command() {
+                newTopLevelMenu("KIE Contributors").respondsWith(new Command() {
                     public void execute() {
                         if (defaultPerspective != null) {
                             placeManager.goTo(new DefaultPlaceRequest(defaultPerspective.getIdentifier()));

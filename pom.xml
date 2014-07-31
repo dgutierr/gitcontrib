@@ -80,6 +80,13 @@
         <version>${project.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.gitcontrib</groupId>
+        <artifactId>gitcontrib-webapp</artifactId>
+        <type>war</type>
+        <version>${project.version}</version>
+      </dependency>
+
       <!-- Dashbuilder -->
       <dependency>
         <groupId>org.dashbuilder</groupId>

@@ -24,7 +24,6 @@ import org.dashbuilder.displayer.DisplayerSettingsFactory;
 import org.dashbuilder.displayer.client.Displayer;
 import org.dashbuilder.displayer.client.DisplayerCoordinator;
 import org.dashbuilder.displayer.client.DisplayerHelper;
-import org.dashbuilder.renderer.table.client.TableRenderer;
 
 import static org.gitcontrib.client.screens.GitContribDataSetConstants.*;
 import static org.dashbuilder.dataset.date.DayOfWeek.*;
@@ -52,10 +51,25 @@ public class GitContribOrgDashboard extends Composite {
     Displayer barChartDayOfWeek;
 
     @UiField(provided = true)
-    Displayer pieChartByModule;
+    Displayer bubbleChartByModule;
 
     @UiField(provided = true)
     Displayer tableAll;
+
+    @UiField(provided = true)
+    Displayer tableTopAuthors;
+
+    @UiField(provided = true)
+    Displayer repoSelector;
+
+    @UiField(provided = true)
+    Displayer moduleSelector;
+
+    @UiField(provided = true)
+    Displayer authorSelector;
+
+    @UiField(provided = true)
+    Displayer topAuthorSelector;
 
     protected String organization = null;
 
@@ -66,33 +80,36 @@ public class GitContribOrgDashboard extends Composite {
 
         areaChartByDate = DisplayerHelper.lookupDisplayer(
                 DisplayerSettingsFactory.newAreaChartSettings()
-                        .dataset(GITCONTRIB_ALL)
-                        .group(COLUMN_ORG).select(organization)
-                        .group(COLUMN_DATE, 80, MONTH)
-                        .count("commits")
-                        .title("#Commits evolution")
-                        .titleVisible(true)
-                        .width(850).height(200)
-                        .margins(10, 70, 60, 0)
-                        .column("Date")
-                        .column("#Commits")
-                        .filterOn(false, true, true)
-                        .buildSettings());
+                .dataset(GITCONTRIB_ALL)
+                .group(COLUMN_ORG).select(organization)
+                .group(COLUMN_DATE, 80, MONTH)
+                .count("commits")
+                .title("#Commits evolution")
+                .titleVisible(true)
+                .width(600).height(200)
+                .margins(10, 60, 70, 0)
+                .column("Date")
+                .column("#Commits")
+                .filterOff(true)
+                .buildSettings());
 
-        pieChartByModule = DisplayerHelper.lookupDisplayer(
-                DisplayerSettingsFactory.newBarChartSettings()
+        bubbleChartByModule = DisplayerHelper.lookupDisplayer(
+                DisplayerSettingsFactory.newBubbleChartSettings()
                 .dataset(GITCONTRIB_ALL)
                 .group(COLUMN_ORG).select(organization)
                 .group(COLUMN_MODULE)
+                .distinct(COLUMN_REPO, "#repositories")
+                .distinct(COLUMN_AUTHOR, "#contributors")
                 .count("#commits")
-                .sort(COLUMN_MODULE, ASCENDING)
-                .title("Modules")
+                .title("Commits per module")
                 .titleVisible(true)
-                .width(250).height(150)
-                .margins(0, 40, 100, 0)
-                .column("Module")
-                .column("Number of commits")
-                .horizontal()
+                .width(400).height(220)
+                .margins(10, 50, 70, 0)
+                .column(COLUMN_MODULE, "Module")
+                .column("#repositories", "#repositories")
+                .column("#commits", "Number of commits")
+                .column(COLUMN_MODULE, "Module")
+                .column("#contributors", "#contributors")
                 .filterOn(false, true, true)
                 .buildSettings());
 
@@ -104,9 +121,9 @@ public class GitContribOrgDashboard extends Composite {
                 .count("occurrences")
                 .sort(COLUMN_DATE, ASCENDING)
                 .title("Years")
-                .titleVisible(true)
-                .width(200).height(150)
-                .margins(0, 0, 0, 0)
+                .titleVisible(false)
+                .width(230).height(170)
+                .margins(0, 0, 10, 5)
                 .filterOn(false, true, false)
                 .buildSettings());
 
@@ -117,9 +134,9 @@ public class GitContribOrgDashboard extends Composite {
                 .group(COLUMN_DATE).fixed(QUARTER)
                 .count("occurrences")
                 .title("Quarters")
-                .titleVisible(true)
-                .width(200).height(150)
-                .margins(0, 0, 0, 0)
+                .titleVisible(false)
+                .width(230).height(170)
+                .margins(0, 0, 5, 5)
                 .filterOn(false, true, false)
                 .buildSettings());
 
@@ -130,9 +147,9 @@ public class GitContribOrgDashboard extends Composite {
                 .group(COLUMN_DATE).fixed(DAY_OF_WEEK).firstDay(SUNDAY)
                 .count("occurrences")
                 .title("Day of week")
-                .titleVisible(true)
-                .width(200).height(150)
-                .margins(0, 40, 70, 0)
+                .titleVisible(false)
+                .width(230).height(170)
+                .margins(0, 10, 70, 0)
                 .horizontal()
                 .filterOn(false, true, true)
                 .buildSettings());
@@ -141,28 +158,96 @@ public class GitContribOrgDashboard extends Composite {
                 DisplayerSettingsFactory.newTableSettings()
                 .dataset(GITCONTRIB_ALL)
                 .group(COLUMN_ORG).select(organization)
-                .title("Commits")
+                .title(organization + " Commits")
                 .titleVisible(false)
-                .tablePageSize(6)
+                .tablePageSize(8)
+                .tableWidth(1000)
                 .tableOrderEnabled(true)
-                .tableOrderDefault(COLUMN_ORG, DESCENDING)
-                .column(COLUMN_MODULE, "Module")
-                .column(COLUMN_REPO, "Repository")
                 .column(COLUMN_AUTHOR, "Author")
-                .column(COLUMN_DATE, "Date")
-                .column(COLUMN_MSG, "Message")
+                .column(COLUMN_MSG, "Commit")
                 .filterOn(true, true, true)
-                .renderer(TableRenderer.UUID)
                 .buildSettings());
 
-        // Make that charts interact among them
+        tableTopAuthors = DisplayerHelper.lookupDisplayer(
+                DisplayerSettingsFactory.newTableSettings()
+                .dataset(GITCONTRIB_ALL)
+                .group(COLUMN_ORG).select(organization)
+                .group(COLUMN_AUTHOR)
+                .count("#Commits")
+                .sort("#Commits", DESCENDING)
+                .title("Top contributors")
+                .titleVisible(false)
+                .tablePageSize(8)
+                .tableWidth(400)
+                .tableOrderEnabled(false)
+                .column(COLUMN_AUTHOR, "Author")
+                .column("#Commits", "#Commits")
+                .filterOn(false, true, true)
+                .buildSettings());
+
+        // Create the selectors
+
+        repoSelector = DisplayerHelper.lookupDisplayer(
+                DisplayerSettingsFactory.newSelectorSettings()
+                .dataset(GITCONTRIB_ALL)
+                .group(COLUMN_REPO)
+                .count("#Commits")
+                .sort(COLUMN_REPO, ASCENDING)
+                .title("Repository Selector")
+                .column("Repository")
+                .column("#Commits")
+                .filterOn(false, true, true)
+                .buildSettings());
+
+        moduleSelector = DisplayerHelper.lookupDisplayer(
+                DisplayerSettingsFactory.newSelectorSettings()
+                .dataset(GITCONTRIB_ALL)
+                .group(COLUMN_MODULE)
+                .count("#Commits")
+                .title("Module Selector")
+                .sort(COLUMN_MODULE, ASCENDING)
+                .column("Module")
+                .column("#Commits")
+                .filterOn(false, true, true)
+                .buildSettings());
+
+        authorSelector = DisplayerHelper.lookupDisplayer(
+                DisplayerSettingsFactory.newSelectorSettings()
+                .dataset(GITCONTRIB_ALL)
+                .group(COLUMN_AUTHOR)
+                .count("#Commits")
+                .sort(COLUMN_AUTHOR, ASCENDING)
+                .title("Author Selector")
+                .column("Author")
+                .column("#Commits")
+                .filterOn(false, true, true)
+                .buildSettings());
+
+        topAuthorSelector = DisplayerHelper.lookupDisplayer(
+                DisplayerSettingsFactory.newSelectorSettings()
+                .dataset(GITCONTRIB_ALL)
+                .group(COLUMN_AUTHOR)
+                .count("#Commits")
+                .sort("#Commits", DESCENDING)
+                .title("Top Contributor Selector")
+                .column("Top Contributor")
+                .column("#Commits")
+                .filterOn(false, true, true)
+                .buildSettings());
+
+        // Make the displayers interact among them
         DisplayerCoordinator viewerCoordinator = new DisplayerCoordinator();
         viewerCoordinator.addDisplayer(areaChartByDate);
         viewerCoordinator.addDisplayer(pieChartYears);
         viewerCoordinator.addDisplayer(pieChartQuarters);
         viewerCoordinator.addDisplayer(barChartDayOfWeek);
-        viewerCoordinator.addDisplayer(pieChartByModule);
+        viewerCoordinator.addDisplayer(bubbleChartByModule);
         viewerCoordinator.addDisplayer(tableAll);
+        viewerCoordinator.addDisplayer(tableTopAuthors);
+        viewerCoordinator.addDisplayer(repoSelector);
+        viewerCoordinator.addDisplayer(moduleSelector);
+        viewerCoordinator.addDisplayer(authorSelector);
+        viewerCoordinator.addDisplayer(topAuthorSelector);
 
         // Init the dashboard from the UI Binder template
         initWidget(uiBinder.createAndBindUi(this));
