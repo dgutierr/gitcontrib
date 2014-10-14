@@ -28,14 +28,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
-import org.dashbuilder.dataset.DataSetLookupService;
-import org.dashbuilder.dataset.client.DataSetLookupClient;
-import org.dashbuilder.displayer.DisplayerType;
-import org.dashbuilder.displayer.client.RendererLibLocator;
-import org.dashbuilder.renderer.google.client.GoogleRenderer;
-import org.dashbuilder.renderer.selector.client.SelectorRenderer;
 import org.jboss.errai.bus.client.api.ClientMessageBus;
-import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
@@ -46,9 +39,8 @@ import org.uberfire.client.workbench.events.ApplicationReadyEvent;
 import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBar;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.menu.MenuFactory;
-import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
+import org.dashbuilder.displayer.client.ClientSettings;
 
 import static org.uberfire.workbench.model.menu.MenuFactory.*;
 
@@ -74,40 +66,13 @@ public class GitContribEntryPoint {
     private ClientMessageBus bus;
 
     @Inject
-    private RendererLibLocator rendererLibLocator;
-
-    @Inject
-    private DataSetLookupClient dataSetLookupClient;
-
-    @Inject
-    private Caller<DataSetLookupService> dataSetLookupService;
+    private ClientSettings clientSettings;
 
     @PostConstruct
     public void startApp() {
-        initDashbuilder();
+        clientSettings.turnOnBackend();
+        clientSettings.turnOnDataSetPush();
         hideLoadingPopup();
-    }
-
-    @PostConstruct
-    private void initDashbuilder() {
-        // Enable the data set lookup backend service so that the DataSetLookupClient is able to send requests
-        // not only to the ClientDataSetManager but also to the remote DataSetLookupService.
-        dataSetLookupClient.setLookupService(dataSetLookupService);
-
-        // Set the default renderer lib for each displayer type.
-        rendererLibLocator.setDefaultRenderer( DisplayerType.BARCHART, GoogleRenderer.UUID);
-        rendererLibLocator.setDefaultRenderer( DisplayerType.PIECHART, GoogleRenderer.UUID);
-        rendererLibLocator.setDefaultRenderer( DisplayerType.AREACHART, GoogleRenderer.UUID);
-        rendererLibLocator.setDefaultRenderer( DisplayerType.LINECHART, GoogleRenderer.UUID);
-        rendererLibLocator.setDefaultRenderer( DisplayerType.BUBBLECHART, GoogleRenderer.UUID);
-        rendererLibLocator.setDefaultRenderer( DisplayerType.METERCHART, GoogleRenderer.UUID);
-        rendererLibLocator.setDefaultRenderer( DisplayerType.MAP, GoogleRenderer.UUID);
-        rendererLibLocator.setDefaultRenderer( DisplayerType.TABLE, GoogleRenderer.UUID);
-        rendererLibLocator.setDefaultRenderer( DisplayerType.SELECTOR, SelectorRenderer.UUID);
-
-        // Enable the ability to push and handle on client data sets greater than 2 Mb
-        dataSetLookupClient.setPushRemoteDataSetEnabled(true);
-        dataSetLookupClient.setPushRemoteDataSetMaxSize(2024);
     }
 
     private void setupMenu( @Observes final ApplicationReadyEvent event ) {

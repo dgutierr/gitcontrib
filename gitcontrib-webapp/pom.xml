@@ -25,6 +25,11 @@
     <!-- Dashbuilder -->
     <dependency>
       <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-displayer-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
       <artifactId>dashbuilder-all</artifactId>
     </dependency>
 
@@ -42,12 +47,6 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-workbench-processors</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-panel-manager-nswe</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -72,6 +71,12 @@
       <artifactId>cdi-api</artifactId>
     </dependency>
 
+    <!-- Errai Security -->
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-security-picketlink</artifactId>
+    </dependency>
+
     <!-- Errai AS -->
     <dependency>
       <groupId>org.jboss.errai</groupId>
@@ -90,26 +95,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.jboss.errai</groupId>
-      <artifactId>errai-cdi-jetty</artifactId>
-    </dependency>
-
-    <!-- CDI Development Utils -->
-    <!-- This must be placed above com.google.gwt:gwt-dev to override the Jetty
-      that is present there -->
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty-plus</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty-naming</artifactId>
+      <groupId>org.owasp.encoder</groupId>
+      <artifactId>encoder</artifactId>
     </dependency>
 
     <!-- Weld Modules -->
@@ -128,6 +115,15 @@
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <!-- PicketLink has a hard dependency on JBoss Logging.
+     Since this app deploys to Jetty, we include this as a runtime-scoped dependency.
+     If deploying to JBoss AS or WildFly, you would set this to provided scope. -->
+    <dependency>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging</artifactId>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
 
@@ -196,9 +192,8 @@
           <module>org.gitcontrib.FastCompiledGitContribApp</module>
           <logLevel>INFO</logLevel>
           <strict>true</strict>
-          <runTarget>org.gitcontrib.GitContribApp/GitContrib.html</runTarget>
+          <runTarget>gitcontrib.html</runTarget>
           <extraJvmArgs>-Xmx1024m -XX:MaxPermSize=256m</extraJvmArgs>
-          <server>org.jboss.errai.cdi.server.gwt.JettyLauncher</server>
           <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
         </configuration>
         <executions>

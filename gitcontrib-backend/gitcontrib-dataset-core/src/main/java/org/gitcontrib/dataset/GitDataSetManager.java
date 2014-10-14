@@ -107,7 +107,7 @@ public class GitDataSetManager {
     }
 
     private void initDataSets() throws Exception {
-        final DataSetBuilder dsBuilder = DataSetFactory.newDSBuilder()
+        final DataSetBuilder dsBuilder = DataSetFactory.newDataSetBuilder()
                 .label("organization")
                 .label("module")
                 .label("repository")
