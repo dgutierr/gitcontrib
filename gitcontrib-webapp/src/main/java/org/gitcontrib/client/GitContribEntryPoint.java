@@ -40,7 +40,6 @@ import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBar;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.Menus;
-import org.dashbuilder.displayer.client.ClientSettings;
 
 import static org.uberfire.workbench.model.menu.MenuFactory.*;
 
@@ -65,13 +64,8 @@ public class GitContribEntryPoint {
     @Inject
     private ClientMessageBus bus;
 
-    @Inject
-    private ClientSettings clientSettings;
-
     @PostConstruct
     public void startApp() {
-        clientSettings.turnOnBackend();
-        clientSettings.turnOnDataSetPush();
         hideLoadingPopup();
     }
 

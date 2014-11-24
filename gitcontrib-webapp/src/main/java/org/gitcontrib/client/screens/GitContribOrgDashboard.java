@@ -20,6 +20,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import org.dashbuilder.dataset.group.AggregateFunctionType;
 import org.dashbuilder.displayer.DisplayerSettingsFactory;
 import org.dashbuilder.displayer.client.Displayer;
 import org.dashbuilder.displayer.client.DisplayerCoordinator;
@@ -82,14 +83,13 @@ public class GitContribOrgDashboard extends Composite {
                 DisplayerSettingsFactory.newAreaChartSettings()
                 .dataset(GITCONTRIB_ALL)
                 .group(COLUMN_ORG).select(organization)
-                .group(COLUMN_DATE, 80, MONTH)
-                .count("commits")
+                .group(COLUMN_DATE).dynamic(80, MONTH)
+                .column(COLUMN_DATE, "Date")
+                .column(AggregateFunctionType.COUNT, "commits")
                 .title("#Commits evolution")
                 .titleVisible(true)
                 .width(600).height(200)
                 .margins(10, 60, 70, 0)
-                .column("Date")
-                .column("#Commits")
                 .filterOff(true)
                 .buildSettings());
 
@@ -98,41 +98,40 @@ public class GitContribOrgDashboard extends Composite {
                 .dataset(GITCONTRIB_ALL)
                 .group(COLUMN_ORG).select(organization)
                 .group(COLUMN_MODULE)
-                .distinct(COLUMN_REPO, "#repositories")
-                .distinct(COLUMN_AUTHOR, "#contributors")
-                .count("#commits")
+                .column(COLUMN_MODULE, "Module")
+                .column(COLUMN_REPO, AggregateFunctionType.DISTINCT, "#repositories")
+                .column(AggregateFunctionType.COUNT, "Number of commits")
+                .column(COLUMN_MODULE, "Module")
+                .column(COLUMN_AUTHOR, AggregateFunctionType.DISTINCT, "#contributors")
                 .title("Commits per module")
                 .titleVisible(true)
                 .width(400).height(220)
                 .margins(10, 50, 70, 0)
-                .column(COLUMN_MODULE, "Module")
-                .column("#repositories", "#repositories")
-                .column("#commits", "Number of commits")
-                .column(COLUMN_MODULE, "Module")
-                .column("#contributors", "#contributors")
                 .filterOn(false, true, true)
                 .buildSettings());
 
         pieChartYears = DisplayerHelper.lookupDisplayer(
                 DisplayerSettingsFactory.newPieChartSettings()
-                .dataset(GITCONTRIB_ALL)
-                .group(COLUMN_ORG).select(organization)
-                .group(COLUMN_DATE, YEAR)
-                .count("occurrences")
-                .sort(COLUMN_DATE, ASCENDING)
-                .title("Years")
-                .titleVisible(false)
-                .width(230).height(170)
-                .margins(0, 0, 10, 5)
-                .filterOn(false, true, false)
-                .buildSettings());
+                        .dataset(GITCONTRIB_ALL)
+                        .group(COLUMN_ORG).select(organization)
+                        .group(COLUMN_DATE).dynamic(YEAR)
+                        .column(COLUMN_DATE)
+                        .column(AggregateFunctionType.COUNT, "occurrences")
+                        .sort(COLUMN_DATE, ASCENDING)
+                        .title("Years")
+                        .titleVisible(false)
+                        .width(230).height(170)
+                        .margins(0, 0, 10, 5)
+                        .filterOn(false, true, false)
+                        .buildSettings());
 
         pieChartQuarters = DisplayerHelper.lookupDisplayer(
                 DisplayerSettingsFactory.newPieChartSettings()
                 .dataset(GITCONTRIB_ALL)
                 .group(COLUMN_ORG).select(organization)
                 .group(COLUMN_DATE).fixed(QUARTER)
-                .count("occurrences")
+                .column(COLUMN_DATE)
+                .column(AggregateFunctionType.COUNT, "occurrences")
                 .title("Quarters")
                 .titleVisible(false)
                 .width(230).height(170)
@@ -145,7 +144,8 @@ public class GitContribOrgDashboard extends Composite {
                 .dataset(GITCONTRIB_ALL)
                 .group(COLUMN_ORG).select(organization)
                 .group(COLUMN_DATE).fixed(DAY_OF_WEEK).firstDay(SUNDAY)
-                .count("occurrences")
+                .column(COLUMN_DATE)
+                .column(AggregateFunctionType.COUNT, "occurrences")
                 .title("Day of week")
                 .titleVisible(false)
                 .width(230).height(170)
@@ -158,13 +158,13 @@ public class GitContribOrgDashboard extends Composite {
                 DisplayerSettingsFactory.newTableSettings()
                 .dataset(GITCONTRIB_ALL)
                 .group(COLUMN_ORG).select(organization)
+                .column(COLUMN_AUTHOR, "Author")
+                .column(COLUMN_MSG, "Commit")
                 .title(organization + " Commits")
                 .titleVisible(false)
                 .tablePageSize(8)
                 .tableWidth(1000)
                 .tableOrderEnabled(true)
-                .column(COLUMN_AUTHOR, "Author")
-                .column(COLUMN_MSG, "Commit")
                 .filterOn(true, true, true)
                 .buildSettings());
 
@@ -173,15 +173,14 @@ public class GitContribOrgDashboard extends Composite {
                 .dataset(GITCONTRIB_ALL)
                 .group(COLUMN_ORG).select(organization)
                 .group(COLUMN_AUTHOR)
-                .count("#Commits")
+                .column(COLUMN_AUTHOR, "Author")
+                .column(AggregateFunctionType.COUNT, "#Commits")
                 .sort("#Commits", DESCENDING)
                 .title("Top contributors")
                 .titleVisible(false)
                 .tablePageSize(8)
                 .tableWidth(400)
                 .tableOrderEnabled(false)
-                .column(COLUMN_AUTHOR, "Author")
-                .column("#Commits", "#Commits")
                 .filterOn(false, true, true)
                 .buildSettings());
 
@@ -191,11 +190,10 @@ public class GitContribOrgDashboard extends Composite {
                 DisplayerSettingsFactory.newSelectorSettings()
                 .dataset(GITCONTRIB_ALL)
                 .group(COLUMN_REPO)
-                .count("#Commits")
+                .column(COLUMN_REPO, "Repository")
+                .column(AggregateFunctionType.COUNT, "#Commits")
                 .sort(COLUMN_REPO, ASCENDING)
                 .title("Repository Selector")
-                .column("Repository")
-                .column("#Commits")
                 .filterOn(false, true, true)
                 .buildSettings());
 
@@ -203,11 +201,10 @@ public class GitContribOrgDashboard extends Composite {
                 DisplayerSettingsFactory.newSelectorSettings()
                 .dataset(GITCONTRIB_ALL)
                 .group(COLUMN_MODULE)
-                .count("#Commits")
+                .column(COLUMN_MODULE, "Module")
+                .column(AggregateFunctionType.COUNT, "#Commits")
                 .title("Module Selector")
                 .sort(COLUMN_MODULE, ASCENDING)
-                .column("Module")
-                .column("#Commits")
                 .filterOn(false, true, true)
                 .buildSettings());
 
@@ -215,11 +212,10 @@ public class GitContribOrgDashboard extends Composite {
                 DisplayerSettingsFactory.newSelectorSettings()
                 .dataset(GITCONTRIB_ALL)
                 .group(COLUMN_AUTHOR)
-                .count("#Commits")
+                .column(COLUMN_AUTHOR, "Author")
+                .column(AggregateFunctionType.COUNT, "#Commits")
                 .sort(COLUMN_AUTHOR, ASCENDING)
                 .title("Author Selector")
-                .column("Author")
-                .column("#Commits")
                 .filterOn(false, true, true)
                 .buildSettings());
 
@@ -227,11 +223,10 @@ public class GitContribOrgDashboard extends Composite {
                 DisplayerSettingsFactory.newSelectorSettings()
                 .dataset(GITCONTRIB_ALL)
                 .group(COLUMN_AUTHOR)
-                .count("#Commits")
+                .column(COLUMN_AUTHOR, "Top Contributor")
+                .column(AggregateFunctionType.COUNT, "#Commits")
                 .sort("#Commits", DESCENDING)
                 .title("Top Contributor Selector")
-                .column("Top Contributor")
-                .column("#Commits")
                 .filterOn(false, true, true)
                 .buildSettings());
 
